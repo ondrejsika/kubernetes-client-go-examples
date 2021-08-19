@@ -9,7 +9,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func main() {
+func KubernetesClient() (*kubernetes.Clientset, string, error) {
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		clientcmd.NewDefaultClientConfigLoadingRules(),
 		&clientcmd.ConfigOverrides{},
@@ -17,6 +17,11 @@ func main() {
 	namespace, _, _ := kubeConfig.Namespace()
 	restconfig, _ := kubeConfig.ClientConfig()
 	clientset, _ := kubernetes.NewForConfig(restconfig)
+	return clientset, namespace, nil
+}
+
+func main() {
+	clientset, namespace, _ := KubernetesClient()
 
 	podsClient := clientset.CoreV1().Pods(namespace)
 	pods, _ := podsClient.List(context.TODO(), metav1.ListOptions{})
